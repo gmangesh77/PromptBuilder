@@ -1,6 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useGenerationStore } from '../stores/generationStore';
+import { useSettingsStore } from '../stores/settingsStore';
 import type { ClarifyingQuestion } from '../stores/generationStore';
 import { parseSSE } from '../utils/parseSSE';
 import type { ErrorCode } from '../types/error';
@@ -34,6 +35,13 @@ export function useStream() {
 
   const generate = useCallback(
     async (body: StreamRequest) => {
+      const apiKey = useSettingsStore.getState().apiKey;
+      if (!apiKey) {
+        toast.error('Please set your OpenAI API key in Settings first.');
+        useSettingsStore.getState().openSettings();
+        return;
+      }
+
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
@@ -74,7 +82,7 @@ export function useStream() {
             'Content-Type': 'application/json',
             Accept: 'text/event-stream',
           },
-          body: JSON.stringify(body),
+          body: JSON.stringify({ ...body, apiKey }),
           signal: controller.signal,
         });
 

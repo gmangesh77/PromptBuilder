@@ -12,6 +12,7 @@ import {
   ClarifyingQuestions,
 } from './features/Generation';
 import { FeedbackWidget } from './features/Feedback';
+import { SettingsButton, SettingsModal } from './features/Settings';
 import { Button, Spinner, ErrorBoundary } from './components';
 import type { Platform } from './types';
 import styles from './App.module.css';
@@ -98,8 +99,12 @@ function App() {
           <div className={styles.headerInner}>
             <h1 className={styles.title}>PromptBuilder</h1>
             <p className={styles.subtitle}>Craft perfect prompts for any AI platform</p>
+            <div className={styles.headerActions}>
+              <SettingsButton />
+            </div>
           </div>
         </header>
+        <SettingsModal />
         <main id="main-content" className={styles.main}>
           <div className={styles.card}>
             <PromptInput

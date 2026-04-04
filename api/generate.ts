@@ -1,4 +1,4 @@
-import { openai, MODEL } from './_lib/openai.js';
+import { createOpenAIClient, MODEL } from './_lib/openai.js';
 import { generateRequestSchema } from './_lib/validation.js';
 import { checkRateLimit } from './_lib/rateLimit.js';
 import { checkOrigin } from './_lib/cors.js';
@@ -45,7 +45,9 @@ export async function POST(request: Request) {
     return errorResponse('VALIDATION_ERROR', message, 400);
   }
 
-  const { userInput, platform } = result.data;
+  const { userInput, platform, apiKey } = result.data;
+
+  const openai = createOpenAIClient(apiKey);
 
   // Set up abort for timeout
   const controller = new AbortController();
@@ -112,7 +114,7 @@ export async function POST(request: Request) {
       return errorResponse('API_ERROR', 'Request timed out. Please try again.', 504);
     }
     if (apiErr.status === 401) {
-      return errorResponse('API_ERROR', 'Service configuration error. Please try again later.', 500);
+      return errorResponse('API_ERROR', 'Invalid API key. Please check your key in Settings.', 401);
     }
     if (apiErr.status === 429) {
       return errorResponse('RATE_LIMITED', 'Too many requests. Please wait a moment.', 429);

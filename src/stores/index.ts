@@ -14,3 +14,4 @@ export {
   useIsSubmitted,
 } from './feedbackStore';
 export type { Rating } from './feedbackStore';
+export { useSettingsStore } from './settingsStore';

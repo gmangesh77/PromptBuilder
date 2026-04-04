@@ -16,6 +16,13 @@
 
 .headerInner {
   text-align: center;
+  position: relative;
+}
+
+.headerActions {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .title {
