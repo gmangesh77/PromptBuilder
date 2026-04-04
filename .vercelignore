@@ -1,0 +1,8 @@
+.env
+.env.local
+.env.*.local
+.claude
+.codex
+.cursor
+_bmad
+_bmad-output
