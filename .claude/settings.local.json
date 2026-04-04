@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__MCP_DOCKER__list_directory",
+      "WebSearch",
+      "Bash(dir:*)",
+      "Bash(wc:*)",
+      "Bash(if not exist \"D:\\\\Workbench\\\\github\\\\PromptBuilder\\\\_bmad-output\\\\implementation-artifacts\" mkdir \"D:\\\\Workbench\\\\github\\\\PromptBuilder\\\\_bmad-output\\\\implementation-artifacts\")",
+      "Bash(node --version:*)",
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npx vite:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm ls:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(node -e:*)",
+      "Bash(npx vercel --version)",
+      "Bash(vercel dev)",
+      "mcp__MCP_DOCKER__browser_take_screenshot"
+    ]
+  }
+}
