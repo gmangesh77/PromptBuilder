@@ -133,26 +133,6 @@ function GeneratePage() {
   );
 }
 
-function ComingSoonPage({ title }: { title: string }) {
-  return (
-    <div className={styles.comingSoon}>
-      <div className={styles.comingSoonIcon}>
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-      <h2 className={styles.comingSoonTitle}>{title}</h2>
-      <p className={styles.comingSoonText}>Coming soon</p>
-    </div>
-  );
-}
-
 function App() {
   const currentPage = useNavigationStore((s) => s.currentPage);
   const toggleSidebar = useNavigationStore((s) => s.toggleSidebar);
