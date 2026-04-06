@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
-import { GoogleGenAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export type Provider = 'openai' | 'anthropic' | 'google';
 export type ModelTier = 'fast' | 'quality' | 'best';
@@ -130,21 +130,19 @@ async function streamGoogle(
   opts: { apiKey: string; model: string; systemPrompt: string; userMessage: string },
   encoder: TextEncoder,
 ): Promise<StreamResult> {
-  const client = new GoogleGenAI({ apiKey: opts.apiKey });
-
-  const response = await client.models.generateContentStream({
+  const client = new GoogleGenerativeAI(opts.apiKey);
+  const model = client.getGenerativeModel({
     model: opts.model,
-    config: {
-      systemInstruction: opts.systemPrompt,
-    },
-    contents: [{ role: 'user', parts: [{ text: opts.userMessage }] }],
+    systemInstruction: opts.systemPrompt,
   });
+
+  const response = await model.generateContentStream([opts.userMessage]);
 
   const readable = new ReadableStream({
     async start(controller) {
       try {
-        for await (const chunk of response) {
-          const text = chunk.text;
+        for await (const chunk of response.stream) {
+          const text = chunk.text();
           if (text) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: text })}\n\n`));
           }
