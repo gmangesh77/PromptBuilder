@@ -17,8 +17,8 @@
   padding: var(--space-sm) var(--space-md);
   font-size: var(--font-size-md);
   color: var(--color-text);
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition:
@@ -32,7 +32,7 @@
 }
 
 .select:focus {
-  border-color: rgba(139, 92, 246, 0.4);
+  border-color: var(--color-border-focus);
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
   outline: none;
 }
@@ -43,6 +43,6 @@
 }
 
 .select option {
-  background: #18181b;
+  background: var(--color-bg-secondary);
   color: var(--color-text);
 }
