@@ -1,7 +1,32 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSettingsStore } from '../../stores/settingsStore';
+import type { ModelTier, Provider } from '../../stores/settingsStore';
 import { Button } from '../../components';
 import styles from './Settings.module.css';
+
+const PROVIDERS: { id: Provider; label: string; placeholder: string }[] = [
+  { id: 'openai', label: 'OpenAI', placeholder: 'sk-...' },
+  { id: 'anthropic', label: 'Anthropic', placeholder: 'sk-ant-...' },
+  { id: 'google', label: 'Google', placeholder: 'AIza...' },
+];
+
+const MODEL_TIERS_BY_PROVIDER: Record<Provider, { tier: ModelTier; label: string; model: string; description: string }[]> = {
+  openai: [
+    { tier: 'fast', label: 'Fast', model: 'gpt-4.1-mini', description: 'Fastest, good for simple tasks' },
+    { tier: 'quality', label: 'Quality', model: 'gpt-4.1', description: 'Balanced speed and quality' },
+    { tier: 'best', label: 'Best', model: 'gpt-4o', description: 'Best quality, slower' },
+  ],
+  anthropic: [
+    { tier: 'fast', label: 'Fast', model: 'claude-haiku', description: 'Fastest, cost-effective' },
+    { tier: 'quality', label: 'Quality', model: 'claude-sonnet', description: 'Balanced, great reasoning' },
+    { tier: 'best', label: 'Best', model: 'claude-opus', description: 'Most capable, slower' },
+  ],
+  google: [
+    { tier: 'fast', label: 'Fast', model: 'gemini-flash-lite', description: 'Fastest, lightweight' },
+    { tier: 'quality', label: 'Quality', model: 'gemini-flash', description: 'Balanced, versatile' },
+    { tier: 'best', label: 'Best', model: 'gemini-pro', description: 'Most capable, slower' },
+  ],
+};
 
 export function SettingsButton() {
   const openSettings = useSettingsStore((s) => s.openSettings);
@@ -35,6 +60,10 @@ export function SettingsModal() {
   const apiKey = useSettingsStore((s) => s.apiKey);
   const setApiKey = useSettingsStore((s) => s.setApiKey);
   const clearApiKey = useSettingsStore((s) => s.clearApiKey);
+  const modelTier = useSettingsStore((s) => s.modelTier);
+  const setModelTier = useSettingsStore((s) => s.setModelTier);
+  const provider = useSettingsStore((s) => s.provider);
+  const setProvider = useSettingsStore((s) => s.setProvider);
 
   const [draft, setDraft] = useState('');
   const [showKey, setShowKey] = useState(false);
@@ -72,7 +101,8 @@ export function SettingsModal() {
     setDraft('');
   };
 
-  const maskedKey = apiKey ? `sk-...${apiKey.slice(-4)}` : '';
+  const currentProvider = PROVIDERS.find((p) => p.id === provider) || PROVIDERS[0];
+  const maskedKey = apiKey ? `...${apiKey.slice(-4)}` : '';
 
   return (
     <div className={styles.overlay} onClick={closeSettings}>
@@ -91,11 +121,30 @@ export function SettingsModal() {
         </div>
 
         <div className={styles.section}>
+          <label className={styles.label}>AI Provider</label>
+          <p className={styles.hint}>
+            Choose which AI provider to use. Bring your own API key.
+          </p>
+          <div className={styles.tierOptions}>
+            {PROVIDERS.map((p) => (
+              <button
+                key={p.id}
+                className={`${styles.providerChip} ${provider === p.id ? styles.providerChipActive : ''}`}
+                onClick={() => setProvider(p.id)}
+                type="button"
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.section}>
           <label htmlFor="api-key-input" className={styles.label}>
-            OpenAI API Key
+            {currentProvider.label} API Key
           </label>
           <p className={styles.hint}>
-            Your key is stored locally in your browser and sent directly to OpenAI. It is never stored on our servers.
+            Your key is stored locally in your browser and sent directly to {currentProvider.label}. It is never stored on our servers.
           </p>
 
           {apiKey && !showKey ? (
@@ -115,7 +164,7 @@ export function SettingsModal() {
                 id="api-key-input"
                 type="password"
                 className={styles.input}
-                placeholder="sk-..."
+                placeholder={currentProvider.placeholder}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => {
@@ -126,6 +175,30 @@ export function SettingsModal() {
               />
             </div>
           )}
+        </div>
+
+        <div className={styles.section}>
+          <label className={styles.label}>Model Quality</label>
+          <p className={styles.hint}>
+            Choose based on your speed vs quality needs.
+          </p>
+          <div className={styles.tierOptions}>
+            {MODEL_TIERS_BY_PROVIDER[provider].map(({ tier, label, model, description }) => (
+              <button
+                key={tier}
+                className={`${styles.tierChip} ${modelTier === tier ? styles.tierChipActive : ''}`}
+                onClick={() => setModelTier(tier)}
+                type="button"
+              >
+                <span className={styles.tierLabel}>{label}</span>
+                <span className={styles.tierModel}>{model}</span>
+                <span className={styles.tierDesc}>{description}</span>
+              </button>
+            ))}
+          </div>
+          <p className={styles.tierCost}>
+            Your key, your cost — higher quality models use more tokens.
+          </p>
         </div>
 
         <div className={styles.actions}>

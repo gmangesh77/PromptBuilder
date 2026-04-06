@@ -19,3 +19,5 @@ export { useNavigationStore } from './navigationStore';
 export type { Page } from './navigationStore';
 export { useThemeStore } from './themeStore';
 export type { Theme } from './themeStore';
+export { useHistoryStore } from './historyStore';
+export type { HistoryEntry } from './historyStore';

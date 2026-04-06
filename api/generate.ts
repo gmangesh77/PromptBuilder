@@ -1,4 +1,4 @@
-import { createOpenAIClient, MODEL } from './_lib/openai.js';
+import { streamGeneration, getModel } from './_lib/providers.js';
 import { generateRequestSchema } from './_lib/validation.js';
 import { checkRateLimit } from './_lib/rateLimit.js';
 import { checkOrigin } from './_lib/cors.js';
@@ -11,25 +11,17 @@ function errorResponse(code: string, message: string, status: number) {
 }
 
 export async function POST(request: Request) {
-  // CSRF: validate Origin header
   if (!checkOrigin(request)) {
     return errorResponse('VALIDATION_ERROR', 'Forbidden origin.', 403);
   }
 
-  // Extract client IP
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 
-  // Rate limit check
   if (!checkRateLimit(ip)) {
-    return errorResponse(
-      'RATE_LIMITED',
-      'Too many requests. Please wait.',
-      429,
-    );
+    return errorResponse('RATE_LIMITED', 'Too many requests. Please wait.', 429);
   }
 
-  // Parse and validate request body
   let body: unknown;
   try {
     body = await request.json();
@@ -39,64 +31,24 @@ export async function POST(request: Request) {
 
   const result = generateRequestSchema.safeParse(body);
   if (!result.success) {
-    const message = result.error.issues
-      .map((i) => i.message)
-      .join('; ');
+    const message = result.error.issues.map((i) => i.message).join('; ');
     return errorResponse('VALIDATION_ERROR', message, 400);
   }
 
-  const { userInput, platform, apiKey } = result.data;
+  const { userInput, platform, apiKey, modelTier, provider } = result.data;
+  const model = getModel(provider, modelTier);
 
-  const openai = createOpenAIClient(apiKey);
-
-  // Set up abort for timeout
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
-    const stream = await openai.chat.completions.create(
-      {
-        model: MODEL,
-        stream: true,
-        messages: [
-          { role: 'system', content: buildSystemPrompt(platform) },
-          {
-            role: 'user',
-            content: userInput,
-          },
-        ],
-      },
-      { signal: controller.signal },
-    );
-
-    const encoder = new TextEncoder();
-
-    const readable = new ReadableStream({
-      async start(streamController) {
-        try {
-          for await (const chunk of stream) {
-            const content = chunk.choices[0]?.delta?.content;
-            if (content) {
-              streamController.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ content })}\n\n`),
-              );
-            }
-          }
-          streamController.enqueue(encoder.encode('data: [DONE]\n\n'));
-          streamController.close();
-        } catch (err) {
-          const message =
-            err instanceof Error && err.name === 'AbortError'
-              ? 'Request timed out.'
-              : 'Stream interrupted.';
-          streamController.enqueue(
-            encoder.encode(
-              `data: ${JSON.stringify({ error: { code: 'API_ERROR', message } })}\n\n`,
-            ),
-          );
-          streamController.close();
-        }
-      },
+    const { readable } = await streamGeneration({
+      provider,
+      apiKey,
+      model,
+      systemPrompt: buildSystemPrompt(platform),
+      userMessage: userInput,
+      signal: controller.signal,
     });
 
     return new Response(readable, {
@@ -107,7 +59,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (err: unknown) {
-    console.error('[generate] OpenAI error:', err);
+    console.error('[generate] API error:', err);
     const apiErr = err as { status?: number; name?: string };
 
     if (apiErr.name === 'AbortError') {

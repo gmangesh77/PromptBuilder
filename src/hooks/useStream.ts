@@ -35,9 +35,9 @@ export function useStream() {
 
   const generate = useCallback(
     async (body: StreamRequest) => {
-      const apiKey = useSettingsStore.getState().apiKey;
+      const { apiKey, modelTier, provider } = useSettingsStore.getState();
       if (!apiKey) {
-        toast.error('Please set your OpenAI API key in Settings first.');
+        toast.error('Please set your API key in Settings first.');
         useSettingsStore.getState().openSettings();
         return;
       }
@@ -82,7 +82,7 @@ export function useStream() {
             'Content-Type': 'application/json',
             Accept: 'text/event-stream',
           },
-          body: JSON.stringify({ ...body, apiKey }),
+          body: JSON.stringify({ ...body, apiKey, modelTier, provider }),
           signal: controller.signal,
         });
 

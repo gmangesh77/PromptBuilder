@@ -4,4 +4,11 @@ export function createOpenAIClient(apiKey: string): OpenAI {
   return new OpenAI({ apiKey });
 }
 
-export const MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
+export function getModel(tier: 'fast' | 'quality' | 'best'): string {
+  const models = {
+    fast: 'gpt-4.1-mini',
+    quality: 'gpt-4.1',
+    best: 'gpt-4o',
+  };
+  return models[tier];
+}

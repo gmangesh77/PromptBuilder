@@ -4,6 +4,7 @@ import { usePromptStore } from './stores/promptStore';
 import { useGenerationStore } from './stores/generationStore';
 import { useFeedbackStore } from './stores/feedbackStore';
 import { useNavigationStore } from './stores/navigationStore';
+import { useHistoryStore } from './stores/historyStore';
 import { useStream } from './hooks/useStream';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { PromptInput, PlatformSelector } from './features/PromptInput';
@@ -15,6 +16,7 @@ import {
 import { FeedbackWidget } from './features/Feedback';
 import { SettingsModal } from './features/Settings';
 import { TemplatesPage } from './features/Templates';
+import { LibraryPage } from './features/Library';
 import { Button, Spinner, ErrorBoundary, Sidebar } from './components';
 import type { Platform } from './types';
 import styles from './App.module.css';
@@ -42,6 +44,8 @@ function GeneratePage() {
   const { generate } = useStream();
   const cache = useLocalStorage<CachedGeneration>(CACHE_KEY);
   const restoredRef = useRef(false);
+  const addHistoryEntry = useHistoryStore((s) => s.addEntry);
+  const lastSavedRef = useRef('');
 
   useEffect(() => {
     if (restoredRef.current) return;
@@ -55,14 +59,12 @@ function GeneratePage() {
   }, [cache, setUserInput, setPlatform, setGeneratedPrompt]);
 
   useEffect(() => {
-    if (generatedPrompt && !isStreaming) {
-      cache.set({
-        userInput,
-        platform: selectedPlatform,
-        generatedPrompt,
-      });
+    if (generatedPrompt && !isStreaming && generatedPrompt !== lastSavedRef.current) {
+      lastSavedRef.current = generatedPrompt;
+      cache.set({ userInput, platform: selectedPlatform, generatedPrompt });
+      addHistoryEntry({ userInput, generatedPrompt, platform: selectedPlatform });
     }
-  }, [generatedPrompt, isStreaming, userInput, selectedPlatform, cache]);
+  }, [generatedPrompt, isStreaming, userInput, selectedPlatform, cache, addHistoryEntry]);
 
   const canGenerate =
     userInput.trim().length >= MIN_INPUT_LENGTH && !isStreaming;
@@ -180,7 +182,7 @@ function App() {
           <main id="main-content" className={styles.main}>
             {currentPage === 'generate' && <GeneratePage />}
             {currentPage === 'templates' && <TemplatesPage />}
-            {currentPage === 'library' && <ComingSoonPage title="Library" />}
+            {currentPage === 'library' && <LibraryPage />}
           </main>
         </div>
       </div>
