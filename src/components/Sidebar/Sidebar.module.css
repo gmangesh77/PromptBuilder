@@ -1,13 +1,17 @@
 .sidebar {
   width: 240px;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
   background: var(--paper);
   border-right: 1px solid var(--rule);
   display: flex;
   flex-direction: column;
   padding: var(--space-sm) var(--space-md);
   flex-shrink: 0;
-  position: relative;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  overflow-y: auto;
   z-index: 20;
 }
 
