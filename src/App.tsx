@@ -6,7 +6,6 @@ import { useFeedbackStore } from './stores/feedbackStore';
 import { useNavigationStore } from './stores/navigationStore';
 import { useHistoryStore } from './stores/historyStore';
 import { useStream } from './hooks/useStream';
-import { useLocalStorage } from './hooks/useLocalStorage';
 import { PromptInput, PlatformSelector } from './features/PromptInput';
 import {
   StreamingAnalysis,
@@ -18,53 +17,41 @@ import { SettingsModal } from './features/Settings';
 import { TemplatesPage } from './features/Templates';
 import { LibraryPage } from './features/Library';
 import { Button, Spinner, ErrorBoundary, Sidebar } from './components';
-import type { Platform } from './types';
 import styles from './App.module.css';
 
 const MIN_INPUT_LENGTH = 10;
-const CACHE_KEY = 'promptbuilder_last_generation';
+const LEGACY_CACHE_KEY = 'promptbuilder_last_generation';
 
-interface CachedGeneration {
-  userInput: string;
-  platform: Platform;
-  generatedPrompt: string;
+// One-time cleanup of pre-Library stale cache key so existing users stop
+// seeing a phantom prompt on first load after this release.
+try {
+  localStorage.removeItem(LEGACY_CACHE_KEY);
+} catch {
+  // no-op
 }
 
 function GeneratePage() {
   const userInput = usePromptStore((s) => s.userInput);
   const selectedPlatform = usePromptStore((s) => s.selectedPlatform);
-  const setUserInput = usePromptStore((s) => s.setUserInput);
   const setPlatform = usePromptStore((s) => s.setPlatform);
+  const setUserInput = usePromptStore((s) => s.setUserInput);
   const isStreaming = useGenerationStore((s) => s.isStreaming);
   const questions = useGenerationStore((s) => s.questions);
   const clearQuestions = useGenerationStore((s) => s.clearQuestions);
   const generatedPrompt = useGenerationStore((s) => s.generatedPrompt);
-  const setGeneratedPrompt = useGenerationStore((s) => s.setGeneratedPrompt);
   const resetFeedback = useFeedbackStore((s) => s.resetFeedback);
   const { generate } = useStream();
-  const cache = useLocalStorage<CachedGeneration>(CACHE_KEY);
-  const restoredRef = useRef(false);
   const addHistoryEntry = useHistoryStore((s) => s.addEntry);
   const lastSavedRef = useRef('');
 
-  useEffect(() => {
-    if (restoredRef.current) return;
-    restoredRef.current = true;
-    const cached = cache.get();
-    if (cached?.generatedPrompt) {
-      setUserInput(cached.userInput);
-      setPlatform(cached.platform);
-      setGeneratedPrompt(cached.generatedPrompt);
-    }
-  }, [cache, setUserInput, setPlatform, setGeneratedPrompt]);
-
+  // Save every completed generation to the Library (history is the only
+  // persistence — no more cache-based restoration on mount).
   useEffect(() => {
     if (generatedPrompt && !isStreaming && generatedPrompt !== lastSavedRef.current) {
       lastSavedRef.current = generatedPrompt;
-      cache.set({ userInput, platform: selectedPlatform, generatedPrompt });
       addHistoryEntry({ userInput, generatedPrompt, platform: selectedPlatform });
     }
-  }, [generatedPrompt, isStreaming, userInput, selectedPlatform, cache, addHistoryEntry]);
+  }, [generatedPrompt, isStreaming, userInput, selectedPlatform, addHistoryEntry]);
 
   const canGenerate =
     userInput.trim().length >= MIN_INPUT_LENGTH && !isStreaming;

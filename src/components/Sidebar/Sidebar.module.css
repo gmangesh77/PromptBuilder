@@ -5,7 +5,7 @@
   border-right: 1px solid var(--rule);
   display: flex;
   flex-direction: column;
-  padding: var(--space-md) var(--space-md) var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   flex-shrink: 0;
   position: relative;
   z-index: 20;
@@ -20,8 +20,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-bottom: var(--space-xl);
-  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-sm);
   border-bottom: 1px solid var(--rule);
 }
 
@@ -65,7 +65,8 @@
   text-transform: uppercase;
   color: var(--ink-faint);
   padding: 0 var(--space-sm);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-xs);
+  margin-top: var(--space-sm);
 }
 
 /* Nav */
@@ -81,10 +82,10 @@
   display: flex;
   align-items: baseline;
   gap: var(--space-md);
-  padding: var(--space-sm);
+  padding: 0.375rem var(--space-sm);
   color: var(--ink-muted);
   font-family: var(--font-display);
-  font-size: 1.0625rem;
+  font-size: 1rem;
   font-weight: 400;
   text-align: left;
   transition: color var(--transition-fast);
@@ -134,7 +135,7 @@
 
 .spacer {
   flex: 1;
-  min-height: var(--space-xl);
+  min-height: var(--space-md);
 }
 
 /* Bottom actions */
@@ -142,14 +143,14 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
 }
 
 .actionButton {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-xs) var(--space-sm);
+  padding: 0.3rem var(--space-sm);
   color: var(--ink-muted);
   font-family: var(--font-body);
   font-size: var(--font-size-sm);
