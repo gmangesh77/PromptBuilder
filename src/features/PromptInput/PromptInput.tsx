@@ -44,7 +44,7 @@ export function PromptInput({
 
   return (
     <div className={`${styles.wrapper} ${className ?? ''}`}>
-      <label htmlFor={inputId} className={styles.label}>
+      <label htmlFor={inputId} className={styles.srLabel}>
         What do you need?
       </label>
       <textarea

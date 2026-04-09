@@ -54,30 +54,44 @@ export function TemplatesPage() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.pageHeader}>
-        <div>
-          <h2 className={styles.pageTitle}>Discover</h2>
-          <p className={styles.pageSubtitle}>
-            Ready-to-use prompts across every role. Pick one and make it yours.
-          </p>
+      <header className={styles.hero}>
+        <div className={styles.eyebrow}>
+          <span className={styles.eyebrowRule} />
+          <span>02 / Templates</span>
         </div>
-        <div className={styles.searchWrapper}>
-          <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
-            <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Search templates..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+        <h1 className={styles.heroTitle}>
+          A library for <em>every craft.</em>
+        </h1>
+        <hr className={styles.heroRule} />
+        <p className={styles.heroDek}>
+          Ready-to-use prompts written for professionals across every role.
+          Pick one and make it yours.
+        </p>
+      </header>
+
+      <div className={styles.searchWrapper}>
+        <svg
+          className={styles.searchIcon}
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <input
+          type="text"
+          className={styles.searchInput}
+          placeholder="Search the library…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
 
       {!searchQuery.trim() && (
-        <div className={styles.categoryTabs} role="tablist">
+        <nav className={styles.categoryNav} role="tablist">
           {TEMPLATE_CATEGORIES.map((cat) => (
             <button
               key={cat.name}
@@ -89,16 +103,20 @@ export function TemplatesPage() {
               {cat.name}
             </button>
           ))}
-        </div>
+        </nav>
       )}
 
       <div className={styles.content}>
         {filteredTemplates.length === 0 ? (
-          <p className={styles.emptyState}>No templates found for "{searchQuery}"</p>
+          <p className={styles.emptyState}>No templates found for &ldquo;{searchQuery}&rdquo;</p>
         ) : (
-          Array.from(subcategories.entries()).map(([subcat, templates]) => (
+          Array.from(subcategories.entries()).map(([subcat, templates], idx) => (
             <section key={subcat} className={styles.subcategorySection}>
-              <h3 className={styles.subcategoryTitle}>{subcat}</h3>
+              <header className={styles.subHeader}>
+                <span className={styles.subNumber}>{String(idx + 1).padStart(2, '0')}</span>
+                <h2 className={styles.subTitle}>{subcat}</h2>
+                <hr className={styles.subRule} />
+              </header>
               <div className={styles.cardGrid}>
                 {templates.map((template) => (
                   <button
@@ -106,13 +124,9 @@ export function TemplatesPage() {
                     className={styles.templateCard}
                     onClick={() => setSelectedTemplate(template)}
                   >
-                    <h4 className={styles.cardTitle}>{template.title}</h4>
+                    <h3 className={styles.cardTitle}>{template.title}</h3>
                     <p className={styles.cardDescription}>{template.description}</p>
-                    <span className={styles.cardArrow} aria-hidden="true">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
+                    <span className={styles.cardArrow} aria-hidden="true">&#8594;</span>
                   </button>
                 ))}
               </div>
@@ -153,21 +167,28 @@ function TemplateModal({
         <button className={styles.modalClose} onClick={onClose} aria-label="Close">
           &times;
         </button>
-        <h3 className={styles.modalTitle}>{template.title}</h3>
+
+        <div className={styles.modalEyebrow}>
+          <span className={styles.eyebrowRule} />
+          <span>{template.category} &middot; {template.subcategory}</span>
+        </div>
+        <h2 className={styles.modalTitle}>{template.title}</h2>
         <p className={styles.modalDescription}>{template.description}</p>
 
-        <div className={styles.modalPromptSection}>
-          <h4 className={styles.modalPromptLabel}>Prompt</h4>
-          <div className={styles.modalPromptText}>{template.prompt}</div>
+        <hr className={styles.modalDivider} />
+
+        <div className={styles.modalSection}>
+          <span className={styles.modalSectionLabel}>The Prompt</span>
+          <pre className={styles.modalPromptText}>{template.prompt}</pre>
         </div>
 
         {template.inputs.length > 0 && (
-          <div className={styles.modalInputs}>
-            <h4 className={styles.modalInputsLabel}>Fill in before using:</h4>
+          <div className={styles.modalSection}>
+            <span className={styles.modalSectionLabel}>Fill in before using</span>
             <ul className={styles.modalInputsList}>
               {template.inputs.map((input) => (
-                <li key={input.label} className={styles.modalInputItem}>
-                  [{input.label}{input.required ? ' - REQUIRED' : ''}]
+                <li key={input.label}>
+                  <code>[{input.label}{input.required ? ' \u2014 required' : ''}]</code>
                 </li>
               ))}
             </ul>
@@ -175,21 +196,8 @@ function TemplateModal({
         )}
 
         <div className={styles.modalActions}>
-          <button className={styles.navButton} onClick={onClose} aria-label="Previous template">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
           <button className={styles.useButton} onClick={() => onUse(template)}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Use Template
-          </button>
-          <button className={styles.navButton} onClick={onClose} aria-label="Next template">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            &#9670; Use this template &#8594;
           </button>
         </div>
       </div>

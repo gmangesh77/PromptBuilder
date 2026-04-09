@@ -1,8 +1,7 @@
 .container {
-  padding: var(--space-md) var(--space-lg);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-left: 2px solid var(--accent);
+  padding-left: var(--space-md);
+  margin-top: var(--space-xl);
   animation: fadeIn var(--transition-slow) ease;
 }
 
@@ -12,9 +11,11 @@
 }
 
 .content {
-  font-size: var(--font-size-sm);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.0625rem;
   line-height: var(--line-height-relaxed);
-  color: var(--color-text-secondary);
+  color: var(--ink-muted);
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -24,10 +25,9 @@
   width: 2px;
   height: 1em;
   margin-left: 2px;
-  background: linear-gradient(180deg, #8b5cf6, #6366f1);
+  background: var(--accent);
   vertical-align: text-bottom;
   animation: blink 1s ease-in-out infinite;
-  border-radius: 1px;
 }
 
 @keyframes blink {

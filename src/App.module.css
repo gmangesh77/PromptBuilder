@@ -11,14 +11,15 @@
   min-width: 0;
 }
 
+/* Minimal header — the page hero owns the identity */
 .header {
-  padding: var(--space-md) var(--space-xl);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg);
-  backdrop-filter: blur(8px);
+  padding: var(--space-sm) var(--space-xl);
+  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  min-height: 3rem;
 }
 
 .menuButton {
@@ -27,30 +28,30 @@
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: 1px solid var(--rule);
   border-radius: var(--radius-md);
-  color: var(--color-text-secondary);
+  color: var(--ink-muted);
   cursor: pointer;
   transition:
-    background var(--transition-fast),
+    border-color var(--transition-fast),
     color var(--transition-fast);
   flex-shrink: 0;
 }
 
 .menuButton:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text);
+  border-color: var(--rule-strong);
+  color: var(--ink);
 }
 
+/* Quiet wordmark — headline carries page identity */
 .title {
-  font-size: var(--font-size-lg);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 
 .main {
@@ -59,61 +60,97 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-2xl);
 }
 
-.card {
-  position: relative;
-  background: linear-gradient(
-    180deg,
-    var(--color-surface) 0%,
-    transparent 100%
-  );
-  border-radius: var(--radius-xl);
-  padding: var(--space-xl);
+/* ── Editorial Compose layout ────────────────────────────── */
+
+.compose {
+  max-width: var(--max-width);
+  width: 100%;
+}
+
+.composeHeader {
+  margin-bottom: var(--space-2xl);
+}
+
+/* Eyebrow: leading hairline + small-caps label */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-eyebrow);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.eyebrowRule {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  background: var(--ink-muted);
+  flex-shrink: 0;
+}
+
+/* Hero headline — Fraunces, oversized, italic em in oxblood */
+.composeTitle {
+  font-family: var(--font-display);
+  font-size: var(--font-size-hero);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: var(--space-lg);
+}
+
+.composeTitle em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+/* Short thick rule — editorial section break */
+.composeRule {
+  border: 0;
+  border-top: 2px solid var(--ink);
+  width: 3rem;
+  margin: 0 0 var(--space-lg);
+}
+
+/* Dek — IBM Plex Sans, comfortable reading size */
+.composeDek {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: var(--line-height-relaxed);
+  color: var(--ink-muted);
+  max-width: 32rem;
+}
+
+/* Body: form stack with generous gap */
+.composeBody {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
-  box-shadow:
-    0 0 0 1px var(--color-border),
-    var(--shadow-md),
-    0 0 48px rgba(139, 92, 246, 0.04);
+}
+
+/* Generate row — rule above + button */
+.generateRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--rule);
 }
 
 .generateBtn {
   width: 100%;
-  padding: var(--space-md) var(--space-xl) !important;
-  font-size: var(--font-size-lg) !important;
-  min-height: 3.25rem !important;
-  border-radius: var(--radius-md) !important;
-  letter-spacing: 0.01em !important;
-}
-
-/* Coming soon placeholder */
-.comingSoon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-md);
-  padding: var(--space-3xl) var(--space-md);
-  color: var(--color-text-muted);
-  text-align: center;
-}
-
-.comingSoonIcon {
-  opacity: 0.4;
-}
-
-.comingSoonTitle {
-  font-size: var(--font-size-xl);
-  font-weight: 700;
-  color: var(--color-text-secondary);
-}
-
-.comingSoonText {
+  max-width: 24rem;
+  padding: 0.875rem var(--space-xl);
   font-size: var(--font-size-md);
-  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
 }
 
 /* Mobile */
@@ -123,11 +160,19 @@
   }
 
   .header {
-    padding: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
   }
 
   .main {
     padding: var(--space-xl) var(--space-md) var(--space-3xl);
+  }
+
+  .composeTitle {
+    font-size: var(--font-size-display);
+  }
+
+  .generateBtn {
+    max-width: 100%;
   }
 }
 
@@ -136,17 +181,13 @@
   .main {
     padding: var(--space-2xl) var(--space-xl) var(--space-3xl);
   }
-
-  .card {
-    padding: var(--space-2xl);
-  }
 }
 
 /* Desktop (1025px+) */
 @media (min-width: 1025px) {
   .main {
-    max-width: var(--max-width);
+    max-width: calc(var(--max-width) + 8rem);
     margin-inline: auto;
-    padding: var(--space-2xl) var(--space-md) var(--space-3xl);
+    padding: var(--space-3xl) var(--space-md) var(--space-3xl);
   }
 }

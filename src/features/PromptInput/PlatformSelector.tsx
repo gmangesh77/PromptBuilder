@@ -17,22 +17,22 @@ export function PlatformSelector({
 }: PlatformSelectorProps) {
   return (
     <div className={`${styles.wrapper} ${className ?? ''}`}>
-      <label htmlFor="platform-selector" className={styles.label}>
-        Target platform
-      </label>
-      <select
-        id="platform-selector"
-        className={styles.select}
-        value={value}
-        onChange={(e) => onChange(e.target.value as Platform)}
-        disabled={disabled}
-      >
+      <span className={styles.label}>For</span>
+      <div className={styles.chips} role="radiogroup" aria-label="Target platform">
         {PLATFORMS.map(({ label, value: val }) => (
-          <option key={val} value={val}>
+          <button
+            key={val}
+            type="button"
+            role="radio"
+            aria-checked={value === val}
+            className={`${styles.chip} ${value === val ? styles.chipActive : ''}`}
+            onClick={() => onChange(val as Platform)}
+            disabled={disabled}
+          >
             {label}
-          </option>
+          </button>
         ))}
-      </select>
+      </div>
     </div>
   );
 }

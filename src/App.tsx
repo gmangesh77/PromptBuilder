@@ -92,32 +92,52 @@ function GeneratePage() {
 
   return (
     <>
-      <div className={styles.card}>
-        <PromptInput
-          value={userInput}
-          onChange={setUserInput}
-          onSubmit={canGenerate ? handleGenerate : undefined}
-          disabled={isStreaming}
-        />
-        <PlatformSelector
-          value={selectedPlatform}
-          onChange={setPlatform}
-          disabled={isStreaming}
-        />
-        <Button
-          disabled={!canGenerate}
-          onClick={handleGenerate}
-          className={styles.generateBtn}
-        >
-          {isStreaming ? (
-            <>
-              <Spinner size="sm" label="Generating" /> Generating…
-            </>
-          ) : (
-            'Generate Prompt'
-          )}
-        </Button>
-      </div>
+      <article className={styles.compose}>
+        <header className={styles.composeHeader}>
+          <div className={styles.eyebrow}>
+            <span className={styles.eyebrowRule} />
+            <span>01 / Compose</span>
+          </div>
+          <h1 className={styles.composeTitle}>
+            Craft prompts<br />
+            <em>that work.</em>
+          </h1>
+          <hr className={styles.composeRule} />
+          <p className={styles.composeDek}>
+            A quiet tool for serious conversations with AI. Describe what you need,
+            pick a platform, and receive a prompt engineered for clarity.
+          </p>
+        </header>
+
+        <div className={styles.composeBody}>
+          <PromptInput
+            value={userInput}
+            onChange={setUserInput}
+            onSubmit={canGenerate ? handleGenerate : undefined}
+            disabled={isStreaming}
+          />
+          <PlatformSelector
+            value={selectedPlatform}
+            onChange={setPlatform}
+            disabled={isStreaming}
+          />
+          <div className={styles.generateRow}>
+            <Button
+              disabled={!canGenerate}
+              onClick={handleGenerate}
+              className={styles.generateBtn}
+            >
+              {isStreaming ? (
+                <>
+                  <Spinner size="sm" label="Generating" /> Generating…
+                </>
+              ) : (
+                <>Generate Prompt <span aria-hidden="true">→</span></>
+              )}
+            </Button>
+          </div>
+        </div>
+      </article>
       <StreamingAnalysis />
       {questions.length > 0 && (
         <ClarifyingQuestions
@@ -157,7 +177,7 @@ function App() {
                 <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
-            <h1 className={styles.title}>PromptBuilder</h1>
+            <span className={styles.title}>PromptBuilder</span>
           </header>
           <main id="main-content" className={styles.main}>
             {currentPage === 'generate' && <GeneratePage />}

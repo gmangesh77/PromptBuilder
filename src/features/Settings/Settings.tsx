@@ -113,23 +113,28 @@ export function SettingsModal() {
         aria-modal="true"
         aria-label="Settings"
       >
-        <div className={styles.modalHeader}>
-          <h2 className={styles.modalTitle}>Settings</h2>
-          <button className={styles.closeButton} onClick={closeSettings} aria-label="Close">
-            &times;
-          </button>
+        <button className={styles.closeButton} onClick={closeSettings} aria-label="Close">
+          &times;
+        </button>
+
+        <div className={styles.eyebrow}>
+          <span className={styles.eyebrowRule} />
+          <span>Settings</span>
         </div>
+        <h2 className={styles.modalTitle}>Your <em>toolkit.</em></h2>
+
+        <hr className={styles.modalDivider} />
 
         <div className={styles.section}>
-          <label className={styles.label}>AI Provider</label>
+          <span className={styles.sectionLabel}>AI Provider</span>
           <p className={styles.hint}>
             Choose which AI provider to use. Bring your own API key.
           </p>
-          <div className={styles.tierOptions}>
+          <div className={styles.chipRow}>
             {PROVIDERS.map((p) => (
               <button
                 key={p.id}
-                className={`${styles.providerChip} ${provider === p.id ? styles.providerChipActive : ''}`}
+                className={`${styles.chip} ${provider === p.id ? styles.chipActive : ''}`}
                 onClick={() => setProvider(p.id)}
                 type="button"
               >
@@ -139,12 +144,12 @@ export function SettingsModal() {
           </div>
         </div>
 
+        <hr className={styles.modalDivider} />
+
         <div className={styles.section}>
-          <label htmlFor="api-key-input" className={styles.label}>
-            {currentProvider.label} API Key
-          </label>
+          <span className={styles.sectionLabel}>{currentProvider.label} API Key</span>
           <p className={styles.hint}>
-            Your key is stored locally in your browser and sent directly to {currentProvider.label}. It is never stored on our servers.
+            Stored locally in your browser. Sent directly to {currentProvider.label}. Never touches our servers.
           </p>
 
           {apiKey && !showKey ? (
@@ -177,12 +182,14 @@ export function SettingsModal() {
           )}
         </div>
 
+        <hr className={styles.modalDivider} />
+
         <div className={styles.section}>
-          <label className={styles.label}>Model Quality</label>
+          <span className={styles.sectionLabel}>Model Quality</span>
           <p className={styles.hint}>
             Choose based on your speed vs quality needs.
           </p>
-          <div className={styles.tierOptions}>
+          <div className={styles.tierRow}>
             {MODEL_TIERS_BY_PROVIDER[provider].map(({ tier, label, model, description }) => (
               <button
                 key={tier}

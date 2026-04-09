@@ -1,103 +1,122 @@
 .container {
-  padding: var(--space-lg);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  margin-top: var(--space-2xl);
+  padding: 0;
 }
 
 .intro {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-md);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.0625rem;
+  color: var(--ink-muted);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: 0;
 }
 
 .question {
-  margin-bottom: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .questionText {
-  font-size: var(--font-size-md);
-  font-weight: 600;
-  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--ink);
   margin-bottom: var(--space-sm);
+  line-height: var(--line-height-snug);
 }
 
 .options {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
+  gap: var(--space-md);
+  align-items: baseline;
 }
 
+/* Chip — matches PlatformSelector style */
 .chip {
-  min-height: var(--min-tap-target);
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0.25rem 0;
+  padding-bottom: 2px;
   cursor: pointer;
   transition:
-    all var(--transition-fast);
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+  line-height: 1.4;
 }
 
 .chip:hover {
-  border-color: var(--color-border-focus);
-  color: var(--color-text);
-  background: var(--color-surface-hover);
+  color: var(--ink);
 }
 
 .chipSelected {
-  border-color: var(--color-primary);
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  color: #ffffff;
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom: 2px solid var(--accent);
 }
 
 .actions {
   display: flex;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  align-items: center;
 }
 
+/* Submit — oxblood solid matching primary button */
 .submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: var(--min-tap-target);
-  padding: var(--space-sm) var(--space-lg);
+  padding: 0.875rem var(--space-xl);
+  font-family: var(--font-body);
   font-size: var(--font-size-md);
-  font-weight: 600;
-  color: #ffffff;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  border: none;
-  border-radius: var(--radius-md);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .submitBtn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-  box-shadow: var(--shadow-glow);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .submitBtn:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
+/* Skip — quiet text-link style */
 .skipBtn {
-  min-height: var(--min-tap-target);
-  padding: var(--space-sm) var(--space-lg);
-  font-size: var(--font-size-md);
-  font-weight: 500;
-  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--ink-muted);
   background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: 0;
+  border-bottom: 1px dashed var(--rule-strong);
+  padding: 0.25rem 0;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 .skipBtn:hover {
-  border-color: var(--color-text-muted);
-  color: var(--color-text-secondary);
+  color: var(--ink);
+  border-color: var(--ink);
 }

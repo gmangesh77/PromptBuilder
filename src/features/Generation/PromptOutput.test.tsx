@@ -35,7 +35,7 @@ describe('PromptOutput', () => {
     });
     render(<PromptOutput />);
     expect(
-      screen.getByRole('heading', { name: 'Your Optimized Prompt' }),
+      screen.getByRole('heading', { name: 'Ready to paste.' }),
     ).toBeInTheDocument();
   });
 
@@ -72,7 +72,7 @@ describe('PromptOutput', () => {
       generatedPrompt: 'Test prompt to copy',
     });
     render(<PromptOutput />);
-    await user.click(screen.getByText('Copy to Clipboard'));
-    expect(screen.getByText('Copied!')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Copy to clipboard' }));
+    expect(screen.getByText('✓ Copied')).toBeInTheDocument();
   });
 });

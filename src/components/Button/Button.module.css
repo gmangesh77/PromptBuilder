@@ -5,57 +5,55 @@
   gap: var(--space-sm);
   min-height: var(--min-tap-target);
   min-width: var(--min-tap-target);
-  padding: var(--space-sm) var(--space-xl);
+  padding: 0.875rem var(--space-xl);
+  font-family: var(--font-body);
   font-size: var(--font-size-md);
-  font-weight: 600;
+  font-weight: 500;
   line-height: var(--line-height-tight);
-  border: none;
-  border-radius: var(--radius-md);
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-normal);
-  letter-spacing: 0.01em;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast);
   position: relative;
-  overflow: hidden;
 }
 
 .button:disabled {
   opacity: 0.35;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
 }
 
+/* Primary — oxblood solid */
 .primary {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
-  color: #ffffff;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 0 16px rgba(139, 92, 246, 0.15);
+  background: var(--accent);
+  color: var(--paper);
+  border: 1px solid var(--accent);
 }
 
 .primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #7c3aed 100%);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.4),
-    0 0 32px rgba(139, 92, 246, 0.25);
-  transform: translateY(-1px);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .primary:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.3),
-    0 0 12px rgba(139, 92, 246, 0.2);
+  opacity: 0.88;
 }
 
+/* Secondary — transparent with border */
 .secondary {
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
 }
 
 .secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-  border-color: var(--color-text-muted);
-  color: var(--color-text);
+  border-color: var(--ink);
+  background: transparent;
+}
+
+.secondary:active:not(:disabled) {
+  opacity: 0.75;
 }

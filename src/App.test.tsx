@@ -4,21 +4,26 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import App from './App';
 import { usePromptStore } from './stores/promptStore';
 import { useGenerationStore } from './stores/generationStore';
+import { useNavigationStore } from './stores/navigationStore';
 
 describe('App', () => {
   beforeEach(() => {
     usePromptStore.setState({ userInput: '', selectedPlatform: 'chatgpt' });
     useGenerationStore.getState().resetGeneration();
+    useNavigationStore.setState({ currentPage: 'generate', sidebarOpen: false });
   });
 
-  it('renders the PromptBuilder heading', () => {
+  it('renders the compose hero heading', () => {
     render(<App />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('PromptBuilder');
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    expect(headings.some((h) => h.textContent?.includes('Craft prompts'))).toBe(true);
   });
 
   it('renders semantic header landmark', () => {
     render(<App />);
-    expect(screen.getByRole('banner')).toBeInTheDocument();
+    // Multiple <header> elements exist (app shell + compose section) —
+    // both register as banners in testing-library's implicit role resolution.
+    expect(screen.getAllByRole('banner').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders semantic main landmark', () => {
@@ -35,33 +40,37 @@ describe('App', () => {
 
   it('renders Generate button', () => {
     render(<App />);
-    expect(screen.getByRole('button', { name: 'Generate' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /generate prompt/i })).toBeInTheDocument();
   });
 
   it('disables Generate button when input is less than 10 chars', () => {
     render(<App />);
-    expect(screen.getByRole('button', { name: 'Generate' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /generate prompt/i })).toBeDisabled();
   });
 
   it('enables Generate button when input is at least 10 chars', async () => {
     const user = userEvent.setup();
     render(<App />);
     await user.type(screen.getByLabelText('What do you need?'), 'Hello world test');
-    expect(screen.getByRole('button', { name: 'Generate' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /generate prompt/i })).toBeEnabled();
   });
 
-  it('follows correct tab order: textarea -> selector -> button', () => {
+  it('follows correct tab order: textarea -> first platform chip -> generate button', () => {
     render(<App />);
     const textarea = screen.getByLabelText('What do you need?');
-    const selector = screen.getByLabelText('Target platform');
-    const button = screen.getByRole('button', { name: 'Generate' });
+    const firstPlatformChip = screen.getByRole('radio', { name: 'ChatGPT' });
+    const generateButton = screen.getByRole('button', { name: /generate prompt/i });
 
     // Verify DOM order (natural tab order)
     const main = screen.getByRole('main');
-    const focusables = main.querySelectorAll('textarea, select, button');
-    expect(focusables[0]).toBe(textarea);
-    expect(focusables[1]).toBe(selector);
-    expect(focusables[2]).toBe(button);
+    const allButtons = Array.from(main.querySelectorAll('textarea, button'));
+    const textareaIdx = allButtons.indexOf(textarea);
+    const firstChipIdx = allButtons.indexOf(firstPlatformChip);
+    const generateIdx = allButtons.indexOf(generateButton);
+
+    expect(textareaIdx).toBeGreaterThanOrEqual(0);
+    expect(firstChipIdx).toBeGreaterThan(textareaIdx);
+    expect(generateIdx).toBeGreaterThan(firstChipIdx);
   });
 
   it('shows Generating state when streaming', () => {
@@ -69,6 +78,7 @@ describe('App', () => {
     useGenerationStore.setState({ isStreaming: true });
     render(<App />);
     expect(screen.getByText('Generating…')).toBeInTheDocument();
-    expect(screen.getByRole('button')).toBeDisabled();
+    const generateButton = screen.getByRole('button', { name: /generating/i });
+    expect(generateButton).toBeDisabled();
   });
 });

@@ -1,7 +1,7 @@
 .spinner {
   display: inline-block;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-primary);
+  border: 2px solid var(--rule);
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -20,7 +20,7 @@
 .lg {
   width: 2.5rem;
   height: 2.5rem;
-  border-width: 4px;
+  border-width: 3px;
 }
 
 @keyframes spin {

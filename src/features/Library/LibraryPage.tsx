@@ -72,87 +72,72 @@ function SearchIcon() {
   );
 }
 
-function EmptyBookIcon() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
-      <path d="M9 7h6M9 11h4" />
-    </svg>
-  );
-}
-
 // ---------------------------------------------------------------------------
-// Entry card
+// Entry card — editorial list item
 // ---------------------------------------------------------------------------
 
 interface EntryCardProps {
   entry: HistoryEntry;
+  index: number;
   onToggleFavorite: (id: string) => void;
   onDelete: (id: string) => void;
   onLoad: (entry: HistoryEntry) => void;
 }
 
-function EntryCard({ entry, onToggleFavorite, onDelete, onLoad }: EntryCardProps) {
+function EntryCard({ entry, index, onToggleFavorite, onDelete, onLoad }: EntryCardProps) {
   const { copy, isCopied } = useClipboard();
 
-  const titleText = entry.userInput.length > 80
+  const truncatedUserInput = entry.userInput.length > 80
     ? entry.userInput.slice(0, 80) + '…'
     : entry.userInput;
 
-  const previewText = entry.generatedPrompt.length > 120
+  const truncatedGeneratedPrompt = entry.generatedPrompt.length > 120
     ? entry.generatedPrompt.slice(0, 120) + '…'
     : entry.generatedPrompt;
 
   return (
-    <article className={styles.card}>
-      {/* Clickable main area */}
+    <li className={styles.entry}>
       <button
-        className={styles.cardBody}
+        className={styles.entryBody}
         onClick={() => onLoad(entry)}
-        aria-label={`Load prompt: ${titleText}`}
+        aria-label={`Load prompt: ${truncatedUserInput}`}
       >
-        <div className={styles.cardMeta}>
-          <span className={`${styles.platformBadge} ${styles[`platform_${entry.platform}`]}`}>
+        <div className={styles.entryMeta}>
+          <span className={styles.entryNumber}>{String(index + 1).padStart(2, '0')}</span>
+          <span className={styles.entryTime}>{timeAgo(entry.createdAt)}</span>
+          <span className={styles.entryDivider}>·</span>
+          <span className={`${styles.entryPlatform} ${styles[`platform_${entry.platform}` as keyof typeof styles]}`}>
             {entry.platform}
           </span>
-          <time className={styles.cardTime} dateTime={new Date(entry.createdAt).toISOString()}>
-            {timeAgo(entry.createdAt)}
-          </time>
         </div>
-        <h3 className={styles.cardTitle}>{titleText}</h3>
-        <p className={styles.cardPreview}>{previewText}</p>
+        <h3 className={styles.entryTitle}>{truncatedUserInput}</h3>
+        <p className={styles.entryPreview}>{truncatedGeneratedPrompt}</p>
       </button>
-
-      {/* Action row */}
-      <div className={styles.cardActions}>
+      <div className={styles.entryActions}>
         <button
-          className={`${styles.actionBtn} ${styles.copyBtn} ${isCopied ? styles.copied : ''}`}
+          className={`${styles.entryAction} ${entry.favorite ? styles.entryActionFavorited : ''}`}
+          onClick={() => onToggleFavorite(entry.id)}
+          aria-label={entry.favorite ? 'Unfavorite' : 'Favorite'}
+          aria-pressed={entry.favorite}
+        >
+          <StarIcon filled={entry.favorite} />
+        </button>
+        <button
+          className={`${styles.entryAction} ${isCopied ? styles.entryActionCopied : ''}`}
           onClick={() => copy(entry.generatedPrompt)}
-          aria-label={isCopied ? 'Copied!' : 'Copy generated prompt'}
+          aria-label={isCopied ? 'Copied!' : 'Copy'}
         >
           <CopyIcon />
-          <span>{isCopied ? 'Copied!' : 'Copy'}</span>
         </button>
-        <div className={styles.iconActions}>
-          <button
-            className={`${styles.iconBtn} ${entry.favorite ? styles.favoriteActive : ''}`}
-            onClick={() => onToggleFavorite(entry.id)}
-            aria-label={entry.favorite ? 'Remove from favorites' : 'Add to favorites'}
-            aria-pressed={entry.favorite}
-          >
-            <StarIcon filled={entry.favorite} />
-          </button>
-          <button
-            className={`${styles.iconBtn} ${styles.deleteBtn}`}
-            onClick={() => onDelete(entry.id)}
-            aria-label="Delete entry"
-          >
-            <TrashIcon />
-          </button>
-        </div>
+        <button
+          className={`${styles.entryAction} ${styles.entryActionDanger}`}
+          onClick={() => onDelete(entry.id)}
+          aria-label="Delete"
+        >
+          <TrashIcon />
+        </button>
       </div>
-    </article>
+    </li>
   );
 }
 
@@ -174,13 +159,13 @@ export function LibraryPage() {
   const setGeneratedPrompt = useGenerationStore((s) => s.setGeneratedPrompt);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState<FilterTab>('all');
+  const [filter, setFilter] = useState<FilterTab>('all');
   const [confirmClear, setConfirmClear] = useState(false);
 
   const filteredEntries = useMemo(() => {
     let result = entries;
 
-    if (activeTab === 'favorites') {
+    if (filter === 'favorites') {
       result = result.filter((e) => e.favorite);
     }
 
@@ -194,7 +179,7 @@ export function LibraryPage() {
     }
 
     return result;
-  }, [entries, activeTab, searchQuery]);
+  }, [entries, filter, searchQuery]);
 
   const handleLoad = (entry: HistoryEntry) => {
     setUserInput(entry.userInput);
@@ -212,103 +197,103 @@ export function LibraryPage() {
     setConfirmClear(false);
   };
 
-  const hasEntries = entries.length > 0;
-  const hasResults = filteredEntries.length > 0;
-
   return (
     <div className={styles.page}>
-      {/* Header */}
-      <div className={styles.pageHeader}>
-        <div className={styles.headerText}>
-          <h2 className={styles.pageTitle}>Library</h2>
-          <p className={styles.pageSubtitle}>Your prompt history</p>
+      {/* Editorial hero */}
+      <header className={styles.hero}>
+        <div className={styles.eyebrow}>
+          <span className={styles.eyebrowRule} />
+          <span>03 / Library</span>
         </div>
+        <h1 className={styles.heroTitle}>
+          Your <em>conversations.</em>
+        </h1>
+        <hr className={styles.heroRule} />
+        <p className={styles.heroDek}>
+          Every prompt you've generated, kept close at hand. Revisit, favorite, copy, or start anew.
+        </p>
+      </header>
 
+      {/* Controls */}
+      <div className={styles.controls}>
         <div className={styles.searchWrapper}>
           <SearchIcon />
           <input
             type="search"
             className={styles.searchInput}
-            placeholder="Search prompts..."
+            placeholder="Search…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search prompt history"
           />
         </div>
+
+        <nav className={styles.filterTabs} role="tablist">
+          <button
+            role="tab"
+            aria-selected={filter === 'all'}
+            className={`${styles.filterTab} ${filter === 'all' ? styles.filterTabActive : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+          <button
+            role="tab"
+            aria-selected={filter === 'favorites'}
+            className={`${styles.filterTab} ${filter === 'favorites' ? styles.filterTabActive : ''}`}
+            onClick={() => setFilter('favorites')}
+          >
+            Favorites
+          </button>
+        </nav>
+
+        {entries.length > 0 && (
+          <div className={styles.clearWrapper}>
+            {confirmClear ? (
+              <>
+                <span className={styles.clearConfirmText}>Clear all history?</span>
+                <button
+                  className={`${styles.clearConfirmButton} ${styles.clearConfirmYes}`}
+                  onClick={handleClearAll}
+                >
+                  Yes, clear
+                </button>
+                <button
+                  className={`${styles.clearConfirmButton} ${styles.clearConfirmNo}`}
+                  onClick={() => setConfirmClear(false)}
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button className={styles.clearButton} onClick={handleClearAll}>
+                Clear All
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Filter bar */}
-      {hasEntries && (
-        <div className={styles.filterBar}>
-          <div className={styles.tabs} role="tablist">
-            <button
-              role="tab"
-              aria-selected={activeTab === 'all'}
-              className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              All
-              <span className={styles.tabCount}>{entries.length}</span>
-            </button>
-            <button
-              role="tab"
-              aria-selected={activeTab === 'favorites'}
-              className={`${styles.tab} ${activeTab === 'favorites' ? styles.tabActive : ''}`}
-              onClick={() => setActiveTab('favorites')}
-            >
-              Favorites
-              <span className={styles.tabCount}>{entries.filter((e) => e.favorite).length}</span>
-            </button>
-          </div>
-
-          {confirmClear ? (
-            <div className={styles.confirmRow}>
-              <span className={styles.confirmText}>Clear all history?</span>
-              <button className={styles.confirmYes} onClick={handleClearAll}>Yes, clear</button>
-              <button className={styles.confirmNo} onClick={() => setConfirmClear(false)}>Cancel</button>
-            </div>
-          ) : (
-            <button className={styles.clearBtn} onClick={handleClearAll}>
-              Clear All
-            </button>
-          )}
-        </div>
-      )}
-
       {/* Content */}
-      {!hasEntries ? (
+      {filteredEntries.length === 0 ? (
         <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>
-            <EmptyBookIcon />
-          </div>
-          <p className={styles.emptyTitle}>No prompts yet</p>
-          <p className={styles.emptyText}>
-            Generate your first prompt to see it here.
-          </p>
-        </div>
-      ) : !hasResults ? (
-        <div className={styles.emptyState}>
-          <div className={styles.emptyIcon}>
-            <SearchIcon />
-          </div>
-          <p className={styles.emptyTitle}>No results</p>
-          <p className={styles.emptyText}>
-            No prompts matching &ldquo;{searchQuery}&rdquo;
-          </p>
+          {searchQuery
+            ? `Nothing found for "${searchQuery}"`
+            : 'No prompts yet. Start with Compose.'}
         </div>
       ) : (
-        <ul className={styles.list} aria-label="Prompt history">
-          {filteredEntries.map((entry) => (
-            <li key={entry.id} className={styles.listItem}>
-              <EntryCard
-                entry={entry}
-                onToggleFavorite={toggleFavorite}
-                onDelete={removeEntry}
-                onLoad={handleLoad}
-              />
-            </li>
+        <ol className={styles.entryList}>
+          {filteredEntries.map((entry, idx) => (
+            <EntryCard
+              key={entry.id}
+              entry={entry}
+              index={idx}
+              onToggleFavorite={toggleFavorite}
+              onDelete={removeEntry}
+              onLoad={handleLoad}
+            />
           ))}
-        </ul>
+        </ol>
       )}
     </div>
   );

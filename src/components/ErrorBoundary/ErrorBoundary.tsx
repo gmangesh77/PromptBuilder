@@ -32,6 +32,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className={styles.container} role="alert">
+          <p className={styles.eyebrow}>Error</p>
           <h2 className={styles.heading}>Something went wrong</h2>
           <p className={styles.message}>
             An unexpected error occurred. Please try again.

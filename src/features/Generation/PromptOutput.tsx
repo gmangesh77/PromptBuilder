@@ -10,18 +10,24 @@ export function PromptOutput() {
 
   return (
     <section className={styles.container} aria-label="Generated prompt">
-      <div className={styles.header}>
-        <h2 className={styles.heading}>Your Optimized Prompt</h2>
+      <header className={styles.header}>
+        <div className={styles.eyebrow}>
+          <span className={styles.eyebrowRule} />
+          <span>02 / The Prompt</span>
+        </div>
+        <h2 className={styles.heading}>Ready to paste.</h2>
+      </header>
+      <pre className={styles.prompt}>{generatedPrompt}</pre>
+      <div className={styles.actions}>
         <button
           type="button"
           className={styles.copyButton}
           onClick={() => copy(generatedPrompt)}
           aria-label={isCopied ? 'Copied to clipboard' : 'Copy to clipboard'}
         >
-          {isCopied ? 'Copied!' : 'Copy to Clipboard'}
+          {isCopied ? '✓ Copied' : 'Copy to clipboard →'}
         </button>
       </div>
-      <div className={styles.prompt}>{generatedPrompt}</div>
     </section>
   );
 }

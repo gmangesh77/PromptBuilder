@@ -1,17 +1,20 @@
 .container {
-  padding: var(--space-lg);
-  text-align: center;
+  margin-top: var(--space-2xl);
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--rule);
 }
 
 .label {
-  font-size: var(--font-size-md);
-  color: var(--color-text-secondary);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: var(--ink-muted);
   margin-bottom: var(--space-md);
+  text-align: left;
 }
 
 .buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--space-md);
   margin-bottom: var(--space-sm);
 }
@@ -22,24 +25,23 @@
   justify-content: center;
   min-height: var(--min-tap-target);
   min-width: var(--min-tap-target);
-  font-size: 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  font-size: 1.25rem;
+  background: transparent;
+  border: 1px solid var(--rule);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .thumbButton:hover:not(:disabled) {
-  border-color: var(--color-border-focus);
-  background: var(--color-surface-hover);
-  transform: scale(1.1);
+  border-color: var(--ink);
 }
 
 .thumbButton.selected {
-  border-color: var(--color-primary);
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  box-shadow: var(--shadow-glow);
+  border-color: var(--accent);
+  background: var(--accent-faint);
 }
 
 .thumbButton:disabled {
@@ -49,61 +51,77 @@
 
 .commentLabel {
   display: block;
+  font-family: var(--font-body);
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--ink-muted);
   margin-bottom: var(--space-xs);
   text-align: left;
 }
 
+/* Bottom-border-only textarea, matching PromptInput style */
 .commentInput {
   width: 100%;
-  padding: var(--space-sm) var(--space-md);
+  padding: var(--space-sm) 0 var(--space-sm);
+  font-family: var(--font-body);
   font-size: var(--font-size-md);
-  line-height: var(--line-height-normal);
-  color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  resize: vertical;
-  font-family: var(--font-family);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  line-height: var(--line-height-relaxed);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  border-radius: 0;
+  resize: none;
+  transition: border-color var(--transition-fast);
+}
+
+.commentInput::placeholder {
+  color: var(--ink-faint);
+  font-style: italic;
 }
 
 .commentInput:focus {
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+  border-bottom: 2px solid var(--ink);
   outline: none;
+  padding-bottom: calc(var(--space-sm) - 1px);
 }
 
+/* Submit — oxblood solid */
 .submitButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-height: var(--min-tap-target);
-  padding: var(--space-sm) var(--space-lg);
+  padding: 0.875rem var(--space-xl);
   margin-top: var(--space-md);
+  font-family: var(--font-body);
   font-size: var(--font-size-md);
-  font-weight: 600;
-  color: #ffffff;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  border: none;
-  border-radius: var(--radius-md);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .submitButton:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
-  box-shadow: var(--shadow-glow);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .submitButton:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
+/* Thank-you state — Fraunces italic, sage green */
 .thanks {
+  font-family: var(--font-display);
+  font-style: italic;
   font-size: var(--font-size-md);
-  color: var(--color-success);
-  font-weight: 600;
+  color: var(--sage);
 }

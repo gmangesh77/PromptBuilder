@@ -6,9 +6,9 @@ import { PlatformSelector } from './PlatformSelector';
 describe('PlatformSelector', () => {
   it('renders all 5 platform options', () => {
     render(<PlatformSelector value="chatgpt" onChange={() => {}} />);
-    const options = screen.getAllByRole('option');
-    expect(options).toHaveLength(5);
-    expect(options.map((o) => o.textContent)).toEqual([
+    const radios = screen.getAllByRole('radio');
+    expect(radios).toHaveLength(5);
+    expect(radios.map((r) => r.textContent)).toEqual([
       'ChatGPT',
       'Claude',
       'Gemini',
@@ -19,19 +19,20 @@ describe('PlatformSelector', () => {
 
   it('has ChatGPT as the default selected value', () => {
     render(<PlatformSelector value="chatgpt" onChange={() => {}} />);
-    expect(screen.getByLabelText('Target platform')).toHaveValue('chatgpt');
+    const chatgpt = screen.getByRole('radio', { name: 'ChatGPT' });
+    expect(chatgpt).toHaveAttribute('aria-checked', 'true');
   });
 
   it('calls onChange when a different platform is selected', async () => {
     const user = userEvent.setup();
     const handleChange = vi.fn();
     render(<PlatformSelector value="chatgpt" onChange={handleChange} />);
-    await user.selectOptions(screen.getByLabelText('Target platform'), 'claude');
+    await user.click(screen.getByRole('radio', { name: 'Claude' }));
     expect(handleChange).toHaveBeenCalledWith('claude');
   });
 
   it('has an associated label for accessibility', () => {
     render(<PlatformSelector value="chatgpt" onChange={() => {}} />);
-    expect(screen.getByLabelText('Target platform')).toBeInTheDocument();
+    expect(screen.getByRole('radiogroup', { name: 'Target platform' })).toBeInTheDocument();
   });
 });
