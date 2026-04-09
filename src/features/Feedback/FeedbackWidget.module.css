@@ -58,20 +58,22 @@
   text-align: left;
 }
 
-/* Bottom-border-only textarea, matching PromptInput style */
+/* Boxed editorial textarea, matching PromptInput style */
 .commentInput {
   width: 100%;
-  padding: var(--space-sm) 0 var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   font-family: var(--font-body);
   font-size: var(--font-size-md);
   line-height: var(--line-height-relaxed);
   color: var(--ink);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--rule);
-  border-radius: 0;
-  resize: none;
-  transition: border-color var(--transition-fast);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-md);
+  resize: vertical;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .commentInput::placeholder {
@@ -79,10 +81,15 @@
   font-style: italic;
 }
 
+.commentInput:hover {
+  border-color: var(--ink-faint);
+}
+
 .commentInput:focus {
-  border-bottom: 2px solid var(--ink);
+  border-color: var(--accent);
+  background: var(--paper);
   outline: none;
-  padding-bottom: calc(var(--space-sm) - 1px);
+  box-shadow: 0 0 0 3px var(--accent-faint);
 }
 
 /* Submit — oxblood solid */

@@ -64,37 +64,45 @@
   max-width: 36rem;
 }
 
-/* Search - underline style, no box */
+/* Search - boxed editorial input */
 .searchWrapper {
   position: relative;
-  max-width: 24rem;
-  border-bottom: 1px solid var(--rule-strong);
-  padding-bottom: var(--space-xs);
-  transition: border-color var(--transition-fast);
-}
-
-.searchWrapper:focus-within {
-  border-bottom-color: var(--ink);
+  max-width: 28rem;
 }
 
 .searchIcon {
   position: absolute;
-  left: 0;
+  left: var(--space-md);
   top: 50%;
-  transform: translateY(-60%);
+  transform: translateY(-50%);
   color: var(--ink-faint);
   pointer-events: none;
 }
 
 .searchInput {
   width: 100%;
-  padding: var(--space-xs) 0 var(--space-xs) 1.75rem;
+  padding: var(--space-sm) var(--space-md) var(--space-sm) 2.5rem;
   font-family: var(--font-body);
   font-size: 0.9375rem;
   color: var(--ink);
-  background: transparent;
-  border: none;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-md);
   outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.searchInput:hover {
+  border-color: var(--ink-faint);
+}
+
+.searchInput:focus {
+  border-color: var(--accent);
+  background: var(--paper);
+  box-shadow: 0 0 0 3px var(--accent-faint);
 }
 
 .searchInput::placeholder {

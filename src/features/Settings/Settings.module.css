@@ -157,20 +157,28 @@
 
 .input {
   flex: 1;
-  padding: var(--space-sm) 0;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--rule-strong);
-  border-radius: 0;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-md);
   color: var(--ink);
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  transition: border-bottom-color var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.input:hover {
+  border-color: var(--ink-faint);
 }
 
 .input:focus {
   outline: none;
-  border-bottom-color: var(--ink);
+  border-color: var(--accent);
+  background: var(--paper);
+  box-shadow: 0 0 0 3px var(--accent-faint);
 }
 
 .input::placeholder {
@@ -182,9 +190,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  padding: var(--space-sm) 0;
+  padding: var(--space-sm) var(--space-md);
   margin-top: var(--space-sm);
-  border-bottom: 1px solid var(--rule);
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
 }
 
 .maskedKey {

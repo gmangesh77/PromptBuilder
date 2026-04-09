@@ -56,11 +56,11 @@
 
 .main {
   flex: 1;
-  padding: var(--space-2xl) var(--space-md) var(--space-3xl);
+  padding: var(--space-lg) var(--space-md) var(--space-2xl);
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2xl);
+  gap: var(--space-xl);
 }
 
 /* ── Editorial Compose layout ────────────────────────────── */
@@ -71,7 +71,7 @@
 }
 
 .composeHeader {
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-lg);
 }
 
 /* Eyebrow: leading hairline + small-caps label */
@@ -85,7 +85,7 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-muted);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-sm);
 }
 
 .eyebrowRule {
@@ -96,15 +96,15 @@
   flex-shrink: 0;
 }
 
-/* Hero headline — Fraunces, oversized, italic em in oxblood */
+/* Hero headline — Fraunces, editorial but compact */
 .composeTitle {
   font-family: var(--font-display);
-  font-size: var(--font-size-hero);
+  font-size: 2.5rem;
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -0.02em;
   color: var(--ink);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
 }
 
 .composeTitle em {
@@ -116,24 +116,24 @@
 .composeRule {
   border: 0;
   border-top: 2px solid var(--ink);
-  width: 3rem;
-  margin: 0 0 var(--space-lg);
+  width: 2.5rem;
+  margin: 0 0 var(--space-md);
 }
 
 /* Dek — IBM Plex Sans, comfortable reading size */
 .composeDek {
   font-family: var(--font-body);
-  font-size: 1.125rem;
-  line-height: var(--line-height-relaxed);
+  font-size: 0.9375rem;
+  line-height: 1.55;
   color: var(--ink-muted);
   max-width: 32rem;
 }
 
-/* Body: form stack with generous gap */
+/* Body: form stack */
 .composeBody {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-md);
 }
 
 /* Generate row — rule above + button */
@@ -188,6 +188,6 @@
   .main {
     max-width: calc(var(--max-width) + 8rem);
     margin-inline: auto;
-    padding: var(--space-3xl) var(--space-md) var(--space-3xl);
+    padding: var(--space-lg) var(--space-md) var(--space-2xl);
   }
 }

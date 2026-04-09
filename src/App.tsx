@@ -177,7 +177,7 @@ function App() {
                 <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </button>
-            <span className={styles.title}>PromptBuilder</span>
+            <span className={styles.title}>Cognify Prompts</span>
           </header>
           <main id="main-content" className={styles.main}>
             {currentPage === 'generate' && <GeneratePage />}

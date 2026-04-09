@@ -11,7 +11,7 @@ function loadTheme(): Theme {
   } catch {
     // Storage unavailable
   }
-  return 'light';
+  return 'dark';
 }
 
 function applyTheme(theme: Theme) {

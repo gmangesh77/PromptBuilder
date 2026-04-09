@@ -39,9 +39,8 @@ export function Sidebar() {
         aria-label="Main navigation"
       >
         <div className={styles.brand}>
-          <span className={styles.brandMark}>P—B</span>
-          <span className={styles.brandName}>Prompt&shy;Builder</span>
-          <span className={styles.brandTagline}>a quiet tool</span>
+          <span className={styles.brandName}>Cognify Prompts</span>
+          <span className={styles.brandTagline}>power your imagination</span>
         </div>
 
         <div className={styles.sectionLabel}>Sections</div>
