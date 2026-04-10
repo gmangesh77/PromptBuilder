@@ -6,6 +6,7 @@ import { useFeedbackStore } from './stores/feedbackStore';
 import { useNavigationStore } from './stores/navigationStore';
 import { useHistoryStore } from './stores/historyStore';
 import { usePreferencesStore } from './stores/preferencesStore';
+import { useAuthStore } from './stores/authStore';
 import { useStream } from './hooks/useStream';
 import { PromptInput, PlatformSelector } from './features/PromptInput';
 import {
@@ -15,6 +16,7 @@ import {
 } from './features/Generation';
 import { FeedbackWidget } from './features/Feedback';
 import { SettingsModal } from './features/Settings';
+import { AuthModal } from './features/Auth';
 import { TemplatesPage } from './features/Templates';
 import { LibraryPage } from './features/Library';
 import { Button, Spinner, ErrorBoundary, Sidebar } from './components';
@@ -151,11 +153,17 @@ function GeneratePage() {
 function App() {
   const currentPage = useNavigationStore((s) => s.currentPage);
   const toggleSidebar = useNavigationStore((s) => s.toggleSidebar);
+  const initializeAuth = useAuthStore((s) => s.initialize);
+
+  useEffect(() => {
+    void initializeAuth();
+  }, [initializeAuth]);
 
   return (
     <ErrorBoundary>
       <Toaster position="top-center" duration={5000} closeButton />
       <SettingsModal />
+      <AuthModal />
       <a href="#main-content" className="skip-link">
         Skip to content
       </a>
