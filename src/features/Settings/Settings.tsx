@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useSettingsStore } from '../../stores/settingsStore';
 import type { ModelTier, Provider } from '../../stores/settingsStore';
 import { Button } from '../../components';
+import { PreferencesSection } from './PreferencesSection';
 import styles from './Settings.module.css';
 
 const PROVIDERS: { id: Provider; label: string; placeholder: string }[] = [
@@ -207,6 +208,8 @@ export function SettingsModal() {
             Your key, your cost — higher quality models use more tokens.
           </p>
         </div>
+
+        <PreferencesSection />
 
         <div className={styles.actions}>
           <Button variant="secondary" onClick={closeSettings}>

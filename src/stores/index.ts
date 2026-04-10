@@ -21,3 +21,9 @@ export { useThemeStore } from './themeStore';
 export type { Theme } from './themeStore';
 export { useHistoryStore } from './historyStore';
 export type { HistoryEntry } from './historyStore';
+export {
+  usePreferencesStore,
+  AVAILABLE_DOMAINS,
+  INSTRUCTION_SUFFIX_MAX_LENGTH,
+} from './preferencesStore';
+export type { ClarificationMode, PreferencesState } from './preferencesStore';

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { Platform } from '../types/platform';
-import { DEFAULT_PLATFORM } from '../constants/platforms';
+import { usePreferencesStore } from './preferencesStore';
 
 interface PromptState {
   userInput: string;
@@ -12,9 +12,14 @@ interface PromptState {
 
 export const usePromptStore = create<PromptState>((set) => ({
   userInput: '',
-  selectedPlatform: DEFAULT_PLATFORM,
+  // Hydrate from persisted preferences so platform choice survives reloads.
+  selectedPlatform: usePreferencesStore.getState().preferredPlatform,
   setUserInput: (input) => set({ userInput: input }),
-  setPlatform: (platform) => set({ selectedPlatform: platform }),
+  setPlatform: (platform) => {
+    set({ selectedPlatform: platform });
+    // Keep preferences in sync so the next session remembers this platform.
+    usePreferencesStore.getState().setPreferredPlatform(platform);
+  },
   clearInput: () => set({ userInput: '' }),
 }));
 
