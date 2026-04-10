@@ -27,3 +27,5 @@ export {
   INSTRUCTION_SUFFIX_MAX_LENGTH,
 } from './preferencesStore';
 export type { ClarificationMode, PreferencesState } from './preferencesStore';
+export { useAuthStore } from './authStore';
+export type { AuthView } from './authStore';

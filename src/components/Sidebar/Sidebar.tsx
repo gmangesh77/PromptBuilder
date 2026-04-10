@@ -1,6 +1,7 @@
 import { useNavigationStore } from '../../stores/navigationStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { useThemeStore } from '../../stores/themeStore';
+import { useAuthStore } from '../../stores/authStore';
 import type { Page } from '../../stores/navigationStore';
 import styles from './Sidebar.module.css';
 
@@ -24,6 +25,8 @@ export function Sidebar() {
   const openSettings = useSettingsStore((s) => s.openSettings);
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
+  const user = useAuthStore((s) => s.user);
+  const openAuthModal = useAuthStore((s) => s.openAuthModal);
 
   return (
     <>
@@ -80,6 +83,16 @@ export function Sidebar() {
           >
             <span className={styles.actionGlyph}>◎</span>
             <span className={styles.actionLabel}>Settings</span>
+          </button>
+          <button
+            className={styles.actionButton}
+            onClick={() => openAuthModal()}
+            aria-label={user ? 'Account' : 'Sign in'}
+          >
+            <span className={styles.actionGlyph}>●</span>
+            <span className={styles.actionLabel}>
+              {user ? 'Account' : 'Sign in'}
+            </span>
           </button>
         </div>
 
