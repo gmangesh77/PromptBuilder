@@ -120,11 +120,21 @@ export function AuthModal() {
 
         {!isConfigured && (
           <div className={styles.notConfigured}>
-            Sign-in is unavailable because Supabase is not configured. Copy
-            <code>.env.example</code> to <code>.env.local</code> and add your{' '}
-            <code>VITE_SUPABASE_URL</code> and{' '}
-            <code>VITE_SUPABASE_PUBLISHABLE_KEY</code>, then restart the dev
-            server.
+            {typeof window !== 'undefined' &&
+            (window.location.hostname === 'localhost' ||
+              window.location.hostname === '127.0.0.1') ? (
+              <>
+                Sign-in is unavailable because Supabase is not configured.
+                Copy <code>.env.example</code> to <code>.env.local</code>, add
+                your <code>VITE_SUPABASE_URL</code> and{' '}
+                <code>VITE_SUPABASE_PUBLISHABLE_KEY</code>, then restart{' '}
+                <code>npm run dev</code>.
+              </>
+            ) : (
+              <>
+                Sign-in is temporarily unavailable. Please try again later.
+              </>
+            )}
           </div>
         )}
 
