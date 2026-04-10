@@ -7,6 +7,10 @@ import { useNavigationStore } from './stores/navigationStore';
 import { useHistoryStore } from './stores/historyStore';
 import { usePreferencesStore } from './stores/preferencesStore';
 import { useAuthStore } from './stores/authStore';
+import {
+  syncStoresForUser,
+  resetLocalStoresAfterSignOut,
+} from './lib/cloudSync';
 import { useStream } from './hooks/useStream';
 import { PromptInput, PlatformSelector } from './features/PromptInput';
 import {
@@ -157,6 +161,21 @@ function App() {
 
   useEffect(() => {
     void initializeAuth();
+
+    // Cloud-sync orchestration: mirror stores when the user signs in,
+    // wipe local state when they sign out. The subscription fires on
+    // every auth transition, including the initial session restore.
+    const unsubscribe = useAuthStore.subscribe((state, prevState) => {
+      const prevUserId = prevState.user?.id ?? null;
+      const nextUserId = state.user?.id ?? null;
+      if (nextUserId && nextUserId !== prevUserId) {
+        void syncStoresForUser(nextUserId);
+      } else if (!nextUserId && prevUserId) {
+        resetLocalStoresAfterSignOut();
+      }
+    });
+
+    return unsubscribe;
   }, [initializeAuth]);
 
   return (

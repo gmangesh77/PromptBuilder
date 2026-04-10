@@ -1,4 +1,6 @@
 import { useFeedbackStore } from '../../stores/feedbackStore';
+import { useAuthStore } from '../../stores/authStore';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import type { Rating } from '../../stores/feedbackStore';
 import styles from './FeedbackWidget.module.css';
 
@@ -20,13 +22,29 @@ export function FeedbackWidget({ platform }: FeedbackWidgetProps) {
     if (!rating) return;
     setSubmitting(true);
     try {
-      const body: Record<string, unknown> = { rating, platform };
-      if (comment.trim()) body.comment = comment.trim();
-      await fetch('/api/feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+      const authUser = useAuthStore.getState().user;
+
+      if (authUser && isSupabaseConfigured) {
+        // Signed in — write directly to Supabase (RLS restricts to user).
+        const { error } = await supabase.from('feedback').insert({
+          user_id: authUser.id,
+          rating,
+          comment: comment.trim() || null,
+          platform,
+        });
+        if (error) {
+          console.error('[feedback] supabase insert', error);
+        }
+      } else {
+        // Anonymous — fall back to the existing logging endpoint.
+        const body: Record<string, unknown> = { rating, platform };
+        if (comment.trim()) body.comment = comment.trim();
+        await fetch('/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+      }
     } catch {
       // Silently fail — feedback is non-critical
     }
