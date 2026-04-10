@@ -35,8 +35,15 @@ export async function POST(request: Request) {
     return errorResponse('VALIDATION_ERROR', message, 400);
   }
 
-  const { userInput, platform, apiKey, modelTier, provider } = result.data;
+  const { userInput, platform, apiKey, modelTier, provider, instructionSuffix } =
+    result.data;
   const model = getModel(provider, modelTier);
+
+  // Append the user's persisted default instructions to the message, if any.
+  const trimmedSuffix = instructionSuffix?.trim();
+  const userMessage = trimmedSuffix
+    ? `${userInput}\n\nAdditional user preferences: ${trimmedSuffix}`
+    : userInput;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -47,7 +54,7 @@ export async function POST(request: Request) {
       apiKey,
       model,
       systemPrompt: buildSystemPrompt(platform),
-      userMessage: userInput,
+      userMessage,
       signal: controller.signal,
     });
 

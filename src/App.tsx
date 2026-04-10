@@ -5,6 +5,7 @@ import { useGenerationStore } from './stores/generationStore';
 import { useFeedbackStore } from './stores/feedbackStore';
 import { useNavigationStore } from './stores/navigationStore';
 import { useHistoryStore } from './stores/historyStore';
+import { usePreferencesStore } from './stores/preferencesStore';
 import { useStream } from './hooks/useStream';
 import { PromptInput, PlatformSelector } from './features/PromptInput';
 import {
@@ -59,7 +60,14 @@ function GeneratePage() {
   const handleGenerate = () => {
     if (!canGenerate) return;
     resetFeedback();
-    generate({ userInput, platform: selectedPlatform });
+    const mode = usePreferencesStore.getState().clarificationMode;
+    let effectiveInput = userInput;
+    if (mode === 'never') {
+      effectiveInput = `${userInput}\n\nSKIP_QUESTIONS`;
+    } else if (mode === 'always') {
+      effectiveInput = `${userInput}\n\nPlease ask me 2 clarifying questions before generating the prompt.`;
+    }
+    generate({ userInput: effectiveInput, platform: selectedPlatform });
   };
 
   const handleAnswer = (answers: Record<number, string>) => {

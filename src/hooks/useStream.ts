@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { useGenerationStore } from '../stores/generationStore';
 import { useSettingsStore } from '../stores/settingsStore';
+import { usePreferencesStore } from '../stores/preferencesStore';
 import type { ClarifyingQuestion } from '../stores/generationStore';
 import { parseSSE } from '../utils/parseSSE';
 import type { ErrorCode } from '../types/error';
@@ -41,6 +42,10 @@ export function useStream() {
         useSettingsStore.getState().openSettings();
         return;
       }
+
+      const instructionSuffix = usePreferencesStore
+        .getState()
+        .defaultInstructionSuffix.trim();
 
       abortRef.current?.abort();
       const controller = new AbortController();
@@ -82,7 +87,13 @@ export function useStream() {
             'Content-Type': 'application/json',
             Accept: 'text/event-stream',
           },
-          body: JSON.stringify({ ...body, apiKey, modelTier, provider }),
+          body: JSON.stringify({
+            ...body,
+            apiKey,
+            modelTier,
+            provider,
+            ...(instructionSuffix ? { instructionSuffix } : {}),
+          }),
           signal: controller.signal,
         });
 
