@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import type { Platform } from '../types/platform';
 import { DEFAULT_PLATFORM } from '../constants/platforms';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { useAuthStore } from './authStore';
 
 const STORAGE_KEY = 'promptbuilder_preferences';
 export const INSTRUCTION_SUFFIX_MAX_LENGTH = 500;
@@ -50,6 +52,10 @@ export interface PreferencesState extends StoredPreferences {
   toggleFavoriteDomain: (domain: string) => void;
   setClarificationMode: (mode: ClarificationMode) => void;
   resetPreferences: () => void;
+  // Cloud sync surface — no-ops when Supabase is not configured.
+  loadFromCloud: (userId: string) => Promise<void>;
+  uploadLocalToCloud: (userId: string) => Promise<void>;
+  resetLocal: () => void;
 }
 
 function loadFromStorage(): StoredPreferences {
@@ -91,20 +97,42 @@ function saveToStorage(prefs: StoredPreferences): void {
   }
 }
 
+async function writeToCloud(
+  prefs: StoredPreferences,
+  userId: string,
+): Promise<void> {
+  if (!isSupabaseConfigured) return;
+  const { error } = await supabase.from('preferences').upsert(
+    {
+      user_id: userId,
+      preferred_platform: prefs.preferredPlatform,
+      default_instruction_suffix: prefs.defaultInstructionSuffix,
+      favorite_domains: prefs.favoriteDomains,
+      clarification_mode: prefs.clarificationMode,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'user_id' },
+  );
+  if (error) {
+    console.error('[preferencesStore] writeToCloud', error);
+  }
+}
+
 export const usePreferencesStore = create<PreferencesState>((set, get) => {
   const persist = () => {
-    const {
-      preferredPlatform,
-      defaultInstructionSuffix,
-      favoriteDomains,
-      clarificationMode,
-    } = get();
-    saveToStorage({
-      preferredPlatform,
-      defaultInstructionSuffix,
-      favoriteDomains,
-      clarificationMode,
-    });
+    const snapshot: StoredPreferences = {
+      preferredPlatform: get().preferredPlatform,
+      defaultInstructionSuffix: get().defaultInstructionSuffix,
+      favoriteDomains: get().favoriteDomains,
+      clarificationMode: get().clarificationMode,
+    };
+    saveToStorage(snapshot);
+    // Write-through to cloud when a user is signed in. Fire-and-forget;
+    // errors are logged but never break the local update.
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      void writeToCloud(snapshot, userId);
+    }
   };
 
   return {
@@ -138,6 +166,64 @@ export const usePreferencesStore = create<PreferencesState>((set, get) => {
     resetPreferences: () => {
       set({ ...DEFAULTS });
       persist();
+    },
+
+    loadFromCloud: async (userId: string) => {
+      if (!isSupabaseConfigured) return;
+      const { data, error } = await supabase
+        .from('preferences')
+        .select(
+          'preferred_platform, default_instruction_suffix, favorite_domains, clarification_mode',
+        )
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (error) {
+        console.error('[preferencesStore] loadFromCloud', error);
+        return;
+      }
+      if (!data) return; // No cloud row yet — local stays as-is.
+      const loaded: StoredPreferences = {
+        preferredPlatform: PLATFORMS.includes(data.preferred_platform as Platform)
+          ? (data.preferred_platform as Platform)
+          : DEFAULTS.preferredPlatform,
+        defaultInstructionSuffix:
+          typeof data.default_instruction_suffix === 'string'
+            ? data.default_instruction_suffix.slice(
+                0,
+                INSTRUCTION_SUFFIX_MAX_LENGTH,
+              )
+            : DEFAULTS.defaultInstructionSuffix,
+        favoriteDomains: Array.isArray(data.favorite_domains)
+          ? data.favorite_domains.filter(
+              (d: unknown): d is string => typeof d === 'string',
+            )
+          : DEFAULTS.favoriteDomains,
+        clarificationMode: MODES.includes(
+          data.clarification_mode as ClarificationMode,
+        )
+          ? (data.clarification_mode as ClarificationMode)
+          : DEFAULTS.clarificationMode,
+      };
+      set(loaded);
+      saveToStorage(loaded);
+    },
+
+    uploadLocalToCloud: async (userId: string) => {
+      if (!isSupabaseConfigured) return;
+      const snapshot: StoredPreferences = {
+        preferredPlatform: get().preferredPlatform,
+        defaultInstructionSuffix: get().defaultInstructionSuffix,
+        favoriteDomains: get().favoriteDomains,
+        clarificationMode: get().clarificationMode,
+      };
+      await writeToCloud(snapshot, userId);
+    },
+
+    resetLocal: () => {
+      // Explicitly does NOT call persist() — used on sign-out to clear the
+      // browser without touching the cloud or writing a defaults row.
+      saveToStorage(DEFAULTS);
+      set({ ...DEFAULTS });
     },
   };
 });

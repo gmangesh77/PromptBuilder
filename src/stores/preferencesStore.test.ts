@@ -88,4 +88,23 @@ describe('preferencesStore', () => {
     expect(after.clarificationMode).toBe('auto');
   });
 
+  it('resetLocal wipes state and storage without touching cloud', () => {
+    const s = usePreferencesStore.getState();
+    s.setPreferredPlatform('claude');
+    s.setDefaultInstructionSuffix('hi');
+    s.resetLocal();
+    const after = usePreferencesStore.getState();
+    expect(after.preferredPlatform).toBe('chatgpt');
+    expect(after.defaultInstructionSuffix).toBe('');
+    expect(localStorage.getItem(STORAGE_KEY)).not.toBeNull();
+  });
+
+  it('cloud methods are safe no-ops when Supabase is unconfigured', async () => {
+    await expect(
+      usePreferencesStore.getState().loadFromCloud('user-a'),
+    ).resolves.toBeUndefined();
+    await expect(
+      usePreferencesStore.getState().uploadLocalToCloud('user-a'),
+    ).resolves.toBeUndefined();
+  });
 });
