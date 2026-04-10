@@ -81,4 +81,49 @@ describe('FeedbackWidget', () => {
       }),
     });
   });
+
+  it('renders star selector, category chips and domain chips after rating', async () => {
+    const user = userEvent.setup();
+    render(<FeedbackWidget platform="chatgpt" />);
+    await user.click(screen.getByRole('button', { name: 'Thumbs up' }));
+
+    // 5 stars
+    expect(screen.getByRole('button', { name: '1 star' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '5 stars' })).toBeInTheDocument();
+
+    // 4 category chips
+    expect(screen.getByRole('button', { name: 'Accuracy' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Usefulness' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Clarity' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Tone' })).toBeInTheDocument();
+
+    // Domain chip row (falls back to the 8 AVAILABLE_DOMAINS when the user
+    // has no favorites set).
+    expect(screen.getByRole('button', { name: 'Technical' })).toBeInTheDocument();
+  });
+
+  it('sends stars, categories, and domain to /api/feedback', async () => {
+    const user = userEvent.setup();
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ success: true })),
+    );
+    render(<FeedbackWidget platform="claude" />);
+    await user.click(screen.getByRole('button', { name: 'Thumbs up' }));
+    await user.click(screen.getByRole('button', { name: '4 stars' }));
+    await user.click(screen.getByRole('button', { name: 'Accuracy' }));
+    await user.click(screen.getByRole('button', { name: 'Clarity' }));
+    await user.click(screen.getByRole('button', { name: 'Technical' }));
+    await user.click(screen.getByText('Submit Feedback'));
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    const [, init] = fetchSpy.mock.calls[0];
+    const body = JSON.parse((init as RequestInit).body as string);
+    expect(body).toEqual({
+      rating: 'up',
+      platform: 'claude',
+      stars: 4,
+      categories: ['accuracy', 'clarity'],
+      domain: 'Technical',
+    });
+  });
 });
